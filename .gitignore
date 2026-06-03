@@ -20,6 +20,7 @@ node_modules/
 
 # content system (build artifacts and cloned repo)
 lib/content-system/repo/
+lib/content-system/system-prompt.ts
 
 # misc
 .DS_Store

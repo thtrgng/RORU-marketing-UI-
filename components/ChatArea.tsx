@@ -57,6 +57,7 @@ export default function ChatArea({
               {msg.images && msg.images.length > 0 && (
                 <div className="mb-2 flex flex-wrap gap-2">
                   {msg.images.map((img, i) => (
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img
                       key={i}
                       src={img.dataUrl}

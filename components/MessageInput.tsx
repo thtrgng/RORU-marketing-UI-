@@ -81,6 +81,7 @@ export default function MessageInput({ onSend, disabled }: Props) {
         <div className="flex flex-wrap gap-2 mb-3">
           {images.map((img, i) => (
             <div key={i} className="relative group">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={img.dataUrl}
                 alt={img.name}

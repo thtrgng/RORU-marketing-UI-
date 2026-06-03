@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.54.0",
+    "@tailwindcss/typography": "^0.5.19",
     "autoprefixer": "^10.5.0",
     "clsx": "^2.1.1",
     "iron-session": "^8.0.4",
