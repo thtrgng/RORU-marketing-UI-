@@ -5,12 +5,12 @@ import { useRouter } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
 import ChatArea from "@/components/ChatArea";
 import MessageInput from "@/components/MessageInput";
-import ModelSelector from "@/components/ModelSelector";
 import SaveDialog from "@/components/SaveDialog";
 import Toast from "@/components/Toast";
 import { loadChats, saveChats, createChat } from "@/lib/storage";
-import type { Chat, Message, ImageAttachment, ModelId } from "@/types";
-import { LogOutIcon } from "lucide-react";
+import type { Chat, Message, ImageAttachment, ModelId, ThinkingLevel } from "@/types";
+import { LogOutIcon, BookOpenIcon } from "lucide-react";
+import GuideModal from "@/components/GuideModal";
 
 const DEFAULT_MODEL: ModelId = "claude-sonnet-4-6";
 
@@ -36,6 +36,21 @@ export default function HomePage() {
   const [saveState, setSaveState] = useState<SaveState | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [selectedModel, setSelectedModel] = useState<ModelId>(DEFAULT_MODEL);
+  const [thinkingLevel, setThinkingLevel] = useState<ThinkingLevel>("low");
+  const [unsavedCaption, setUnsavedCaption] = useState(false);
+  const [guideOpen, setGuideOpen] = useState(false);
+
+  // Warn before tab/browser close if there's an unsaved caption or active stream
+  useEffect(() => {
+    function handler(e: BeforeUnloadEvent) {
+      e.preventDefault();
+      e.returnValue = "";
+    }
+    if (isStreaming || unsavedCaption) {
+      window.addEventListener("beforeunload", handler);
+    }
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [isStreaming, unsavedCaption]);
 
   useEffect(() => {
     const stored = loadChats();
@@ -85,6 +100,7 @@ export default function HomePage() {
 
   function handleSaved(folderName: string) {
     setSaveState(null);
+    setUnsavedCaption(false);
     setToast(`Saved to Posts/${folderName}/`);
   }
 
@@ -134,6 +150,7 @@ export default function HomePage() {
           body: JSON.stringify({
             messages: updatedMessages,
             model: updatedChat.model,
+            thinkingLevel,
           }),
         });
 
@@ -162,6 +179,7 @@ export default function HomePage() {
           content: accumulated,
           createdAt: Date.now(),
         };
+        setUnsavedCaption(true);
 
         const finalChat: Chat = {
           ...updatedChat,
@@ -191,7 +209,7 @@ export default function HomePage() {
         setStreamingContent("");
       }
     },
-    [activeChat, chats]
+    [activeChat, chats, thinkingLevel]
   );
 
   async function handleLogout() {
@@ -212,23 +230,22 @@ export default function HomePage() {
       />
 
       <div className="flex flex-col flex-1 min-w-0">
-        <header className="flex items-center justify-between px-4 py-3 border-b border-roru-border bg-roru-bg shrink-0">
-          <h1 className="text-sm font-semibold text-roru-text tracking-tight">
-            RORU Marketing
-          </h1>
-          <div className="flex items-center gap-3">
-            <ModelSelector
-              value={selectedModel}
-              onChange={handleModelChange}
-            />
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-1.5 text-xs text-roru-muted hover:text-roru-text transition-colors"
-            >
-              <LogOutIcon size={14} />
-              Logout
-            </button>
-          </div>
+        <header className="flex items-center justify-end gap-1 px-4 py-2.5 border-b border-roru-border shrink-0">
+          <button
+            onClick={() => setGuideOpen(true)}
+            title="Hướng dẫn sử dụng"
+            className="flex items-center gap-1.5 text-xs text-roru-muted hover:text-roru-text transition-colors px-2 py-1 rounded-md hover:bg-roru-surface"
+          >
+            <BookOpenIcon size={13} />
+            Hướng dẫn
+          </button>
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-1.5 text-xs text-roru-muted hover:text-roru-text transition-colors px-2 py-1 rounded-md hover:bg-roru-surface"
+          >
+            <LogOutIcon size={13} />
+            Logout
+          </button>
         </header>
 
         <ChatArea
@@ -238,7 +255,14 @@ export default function HomePage() {
           onSaveCaption={handleSaveCaption}
         />
 
-        <MessageInput onSend={handleSend} disabled={isStreaming} />
+        <MessageInput
+          onSend={handleSend}
+          disabled={isStreaming}
+          selectedModel={selectedModel}
+          onModelChange={handleModelChange}
+          thinkingLevel={thinkingLevel}
+          onThinkingChange={setThinkingLevel}
+        />
       </div>
 
       {saveState && (
@@ -252,6 +276,8 @@ export default function HomePage() {
       )}
 
       {toast && <Toast message={toast} onDismiss={() => setToast(null)} />}
+
+      {guideOpen && <GuideModal onClose={() => setGuideOpen(false)} />}
     </div>
   );
 }

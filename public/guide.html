@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hướng dẫn sử dụng — RORU Content Writer</title>
+  <style>
+    :root {
+      --bg:       #1c1917;
+      --surface:  #252220;
+      --surface2: #2a2724;
+      --border:   #302e2b;
+      --border2:  #3a3835;
+      --text:     #eeece8;
+      --muted:    #97948f;
+      --accent:   #cc785c;
+      --code-bg:  #211f1d;
+      --sidebar:  #171512;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Georgia', 'Times New Roman', serif;
+      font-size: 14px;
+      line-height: 1.75;
+      color: var(--text);
+      background: var(--bg);
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ── Sticky TOC sidebar ── */
+    .toc-sidebar {
+      width: 240px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      padding: 28px 0 40px;
+    }
+
+    .toc-sidebar::-webkit-scrollbar { width: 4px; }
+    .toc-sidebar::-webkit-scrollbar-track { background: transparent; }
+    .toc-sidebar::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+    .toc-brand {
+      padding: 0 20px 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+    .toc-brand-name {
+      font-family: 'Arial', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      color: var(--text);
+    }
+    .toc-brand-sub {
+      font-family: 'Arial', sans-serif;
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-top: 2px;
+      text-transform: uppercase;
+    }
+
+    .toc-label {
+      font-family: 'Arial', sans-serif;
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 0 20px;
+      margin-bottom: 8px;
+    }
+
+    .toc-link {
+      display: block;
+      padding: 5px 20px;
+      font-family: 'Arial', sans-serif;
+      font-size: 11px;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.15s, background 0.15s;
+      line-height: 1.4;
+    }
+    .toc-link:hover { color: var(--text); background: var(--surface); }
+    .toc-link.chapter {
+      font-weight: 700;
+      color: var(--text);
+      margin-top: 10px;
+      font-size: 11px;
+    }
+    .toc-link.section { padding-left: 32px; }
+
+    /* ── Main content ── */
+    .content {
+      flex: 1;
+      min-width: 0;
+      padding: 48px 60px 80px;
+      max-width: 780px;
+    }
+
+    @media (max-width: 900px) {
+      .toc-sidebar { display: none; }
+      .content { padding: 32px 24px 60px; }
+    }
+
+    /* Cover */
+    .cover {
+      padding-bottom: 48px;
+      margin-bottom: 56px;
+      border-bottom: 1px solid var(--border);
+    }
+    .cover-brand {
+      font-family: 'Arial', sans-serif;
+      font-size: 24pt;
+      font-weight: 700;
+      letter-spacing: 0.35em;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .cover-tagline {
+      font-family: 'Arial', sans-serif;
+      font-size: 8pt;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 48px;
+    }
+    .cover-title {
+      font-size: 20pt;
+      font-weight: 400;
+      font-style: italic;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .cover-subtitle {
+      font-family: 'Arial', sans-serif;
+      font-size: 11pt;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .cover-desc { font-size: 10pt; color: var(--muted); margin-bottom: 4px; }
+    .cover-version {
+      font-family: 'Arial', sans-serif;
+      font-size: 9pt;
+      color: var(--muted);
+      margin-top: 32px;
+    }
+
+    /* Chapter header */
+    .chapter-header {
+      margin-top: 64px;
+      margin-bottom: 32px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border2);
+    }
+    .chapter-label {
+      font-family: 'Arial', sans-serif;
+      font-size: 8pt;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .chapter-title {
+      font-size: 17pt;
+      font-weight: 400;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    h2 {
+      font-family: 'Arial', sans-serif;
+      font-size: 12pt;
+      font-weight: 700;
+      color: var(--text);
+      margin-top: 40px;
+      margin-bottom: 12px;
+    }
+    h3 {
+      font-family: 'Arial', sans-serif;
+      font-size: 9pt;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: 24px;
+      margin-bottom: 8px;
+    }
+    p { margin-bottom: 12px; color: var(--text); }
+    ul, ol { margin-left: 20px; margin-bottom: 12px; }
+    li { margin-bottom: 5px; color: var(--text); }
+    strong { color: var(--text); font-weight: 600; }
+    em { color: var(--muted); font-style: italic; }
+
+    code {
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      background: var(--code-bg);
+      color: var(--accent);
+      padding: 1px 5px;
+      border-radius: 3px;
+      border: 1px solid var(--border);
+    }
+
+    pre {
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      padding: 16px;
+      margin: 16px 0;
+      overflow-x: auto;
+      line-height: 1.6;
+      color: var(--muted);
+      border-radius: 4px;
+    }
+
+    /* Tables */
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 12px; }
+    th {
+      background: var(--surface2);
+      color: var(--muted);
+      font-family: 'Arial', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 9px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border2);
+    }
+    td {
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      color: var(--text);
+      font-size: 12px;
+    }
+    tr:hover td { background: var(--surface); }
+
+    /* Callouts */
+    .callout {
+      background: var(--surface);
+      border-left: 2px solid var(--accent);
+      padding: 12px 16px;
+      margin: 16px 0;
+      border-radius: 0 4px 4px 0;
+    }
+    .callout-label {
+      font-family: 'Arial', sans-serif;
+      font-size: 8px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .callout p { margin-bottom: 0; font-size: 12px; }
+
+    .callout-warn { border-left-color: #c0392b; background: #1f1513; }
+    .callout-warn .callout-label { color: #e07070; }
+
+    .callout-tip { border-left-color: #5a8a5a; background: #131a13; }
+    .callout-tip .callout-label { color: #7aaa7a; }
+
+    /* Layer diagram */
+    .layer-diagram { border: 1px solid var(--border); border-radius: 4px; overflow: hidden; margin: 16px 0; }
+    .layer-row { padding: 12px 16px; border-bottom: 1px solid var(--border); }
+    .layer-row:last-child { border-bottom: none; }
+    .layer-row.l4 { background: #1a1512; }
+    .layer-row.l3 { background: #1e1b18; }
+    .layer-row.l2 { background: var(--surface); }
+    .layer-row.l1 { background: var(--code-bg); }
+    .layer-label { font-family: 'Arial', sans-serif; font-size: 8px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 2px; }
+    .layer-name { font-family: 'Arial', sans-serif; font-weight: 700; font-size: 11px; color: var(--text); }
+    .layer-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    /* 2x2 grid */
+    .grid-2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+    .grid-box { border: 1px solid var(--border); padding: 14px; background: var(--surface); border-radius: 4px; }
+    .grid-box-num { font-family: 'Arial', sans-serif; font-size: 8px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; }
+    .grid-box-title { font-family: 'Arial', sans-serif; font-size: 11px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .grid-box p { font-size: 11px; margin-bottom: 0; color: var(--muted); }
+
+    /* Problem / principle cards */
+    .problem-card { margin-bottom: 12px; padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-left: 2px solid var(--border2); border-radius: 0 4px 4px 0; }
+    .problem-title { font-family: 'Arial', sans-serif; font-size: 11px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .problem-card p { font-size: 12px; margin-bottom: 0; color: var(--muted); }
+
+    .principle-card { margin-bottom: 10px; padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; }
+    .principle-num { font-family: 'Arial', sans-serif; font-size: 8px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 4px; }
+    .principle-name { font-family: 'Arial', sans-serif; font-size: 11px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .principle-card p { font-size: 12px; margin-bottom: 0; color: var(--muted); }
+
+    /* Research */
+    .research-group { margin: 28px 0; }
+    .research-group-label {
+      font-family: 'Arial', sans-serif;
+      font-size: 8px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+    .research-item { margin-bottom: 18px; padding-left: 14px; border-left: 1px solid var(--border2); }
+    .research-title { font-family: 'Arial', sans-serif; font-size: 11px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+    .research-source { font-size: 10px; color: var(--accent); margin-bottom: 6px; font-style: italic; }
+    .research-item p { font-size: 11px; color: var(--muted); margin-bottom: 0; }
+
+    /* Steps */
+    .step-list { counter-reset: step; list-style: none; margin-left: 0; }
+    .step-list li { counter-increment: step; position: relative; padding-left: 36px; margin-bottom: 14px; }
+    .step-list li::before {
+      content: counter(step);
+      position: absolute;
+      left: 0; top: 1px;
+      width: 22px; height: 22px;
+      background: var(--surface2);
+      color: var(--accent);
+      font-family: 'Arial', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      border: 1px solid var(--border2);
+    }
+    .step-list li strong { color: var(--text); }
+
+    .brief-example {
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      background: var(--code-bg);
+      color: var(--muted);
+      padding: 6px 10px;
+      border-radius: 3px;
+    }
+
+    /* Footer */
+    .page-footer {
+      margin-top: 60px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      font-family: 'Arial', sans-serif;
+      font-size: 9px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.8;
+    }
+
+    /* Scrollbar for content */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<!-- ── Sticky TOC sidebar ── -->
+<nav class="toc-sidebar">
+  <div class="toc-brand">
+    <div class="toc-brand-name">R O R U</div>
+    <div class="toc-brand-sub">Hướng dẫn sử dụng</div>
+  </div>
+  <div class="toc-label">Mục lục</div>
+
+  <a class="toc-link chapter" href="#ch1">1 — Tổng quan hệ thống</a>
+  <a class="toc-link section" href="#what-is">RORU Content Writer là gì?</a>
+  <a class="toc-link section" href="#problem">Vấn đề hệ thống giải quyết</a>
+  <a class="toc-link section" href="#arch">Kiến trúc tổng thể</a>
+
+  <a class="toc-link chapter" href="#ch2">2 — Cơ sở lý thuyết</a>
+  <a class="toc-link section" href="#4layer">Kiến trúc 4 lớp</a>
+  <a class="toc-link section" href="#agent-vs-chatbot">Agent khác chatbot</a>
+  <a class="toc-link section" href="#why-multi">Tại sao nhiều agent?</a>
+  <a class="toc-link section" href="#principles">5 Nguyên tắc tư duy</a>
+  <a class="toc-link section" href="#qa-guard">QA Guard</a>
+  <a class="toc-link section" href="#kb">Knowledge Base</a>
+  <a class="toc-link section" href="#save-loop">Nút Save &amp; vòng lặp</a>
+  <a class="toc-link section" href="#research">Nghiên cứu học thuật</a>
+
+  <a class="toc-link chapter" href="#ch3">3 — Logic pipeline</a>
+  <a class="toc-link section" href="#agents">4 agents &amp; vai trò</a>
+  <a class="toc-link section" href="#brand-dna">Brand DNA &amp; 7 dạng bài</a>
+  <a class="toc-link section" href="#structure">Cấu trúc caption 3 tầng</a>
+
+  <a class="toc-link chapter" href="#ch4">4 — Hướng dẫn sử dụng</a>
+  <a class="toc-link section" href="#login">Đăng nhập</a>
+  <a class="toc-link section" href="#steps">Quy trình từng bước</a>
+  <a class="toc-link section" href="#upload">Upload ảnh</a>
+  <a class="toc-link section" href="#model">Chọn model &amp; Effort</a>
+  <a class="toc-link section" href="#save-btn">Nút Save caption</a>
+  <a class="toc-link section" href="#history">Lịch sử hội thoại</a>
+
+  <a class="toc-link chapter" href="#ch5">5 — Mẹo &amp; FAQ</a>
+</nav>
+
+<!-- ── Main content ── -->
+<main class="content">
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-brand">R O R U</div>
+  <div class="cover-tagline">Modern Japanese Restaurant</div>
+  <div class="cover-title">Hướng dẫn sử dụng</div>
+  <div class="cover-subtitle">RORU Content Writer</div>
+  <div class="cover-desc">Hệ thống viết caption thông minh dành cho đội ngũ marketing RORU.</div>
+  <div class="cover-desc">Tài liệu dành cho người dùng không có kiến thức kỹ thuật.</div>
+  <div class="cover-version">Phiên bản 1.1 · Tháng 6, 2026</div>
+</div>
+
+
+<!-- ── CHAPTER 1 ── -->
+<div class="chapter-header" id="ch1">
+  <div class="chapter-label">Chương 1</div>
+  <div class="chapter-title">Tổng quan hệ thống</div>
+</div>
+
+<h2 id="what-is">RORU Content Writer là gì?</h2>
+<p>RORU Content Writer là hệ thống trí tuệ nhân tạo được xây dựng riêng cho nhà hàng RORU, có nhiệm vụ tạo ra những caption mạng xã hội đúng giọng thương hiệu — từ một bức ảnh và vài dòng mô tả.</p>
+<p>Đây không phải ChatGPT hay một công cụ AI viết nội dung thông thường. Hệ thống này được "huấn luyện" chuyên sâu với toàn bộ bản sắc thương hiệu RORU: giọng điệu, từ vựng được phép dùng, các dạng bài, template caption, và phong cách câu chữ được kiểm chứng qua hàng chục bài đăng thực tế.</p>
+
+<div class="callout">
+  <div class="callout-label">Một câu tóm gọn</div>
+  <p>Bạn đưa vào: ảnh + vài dòng mô tả. Hệ thống trả ra: caption hoàn chỉnh, đúng chuẩn RORU, sẵn sàng đăng. Mỗi lần bạn bấm Save, hệ thống trở nên tốt hơn.</p>
+</div>
+
+<h2 id="problem">Vấn đề hệ thống giải quyết</h2>
+<p>Viết caption cho RORU không đơn giản như viết cho một quán cafe thông thường. Mỗi bài đăng phải đồng thời thỏa mãn nhiều yêu cầu:</p>
+<ul>
+  <li>Đúng giọng điệu — không quá hào hứng, không salesy, không generic</li>
+  <li>Có hook mạnh trong 3 giây đầu — không bao giờ bắt đầu bằng "RORU xin giới thiệu…"</li>
+  <li>Khai thác chiều sâu văn hóa Nhật — tên nguyên liệu tiếng Nhật, triết lý Shun, kỹ thuật chế biến</li>
+  <li>Tránh hoàn toàn các từ ngữ bị cấm: "Ngon lắm!", "Đặt ngay!", "Siêu…", "Số 1"</li>
+  <li>Luôn kết thúc bằng contact block chuẩn đầy đủ</li>
+</ul>
+<p>Trước đây, mỗi caption yêu cầu người viết phải ghi nhớ và áp dụng đồng thời hàng chục quy tắc tinh tế. RORU Content Writer tự động hóa toàn bộ quá trình này, đảm bảo tính nhất quán dù ai trong đội ngũ sử dụng.</p>
+
+<h2 id="arch">Kiến trúc tổng thể</h2>
+<table>
+  <thead><tr><th>Repo B — Bộ não tri thức</th><th>Website (Repo A) — Giao diện người dùng</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>Chứa toàn bộ kiến thức về thương hiệu RORU: giọng điệu, từ vựng, dạng bài, template caption, và kho bài đã được lưu trong thư mục <code>Posts/</code>.</td>
+      <td>Trang web bạn đang dùng. Kết nối với bộ não Repo B và Claude AI để tạo caption. Toàn bộ tương tác của bạn diễn ra ở đây.</td>
+    </tr>
+  </tbody>
+</table>
+<p>Khi bạn gửi ảnh và mô tả qua website, hệ thống tự động đọc toàn bộ kiến thức từ Repo B và đưa vào yêu cầu gửi cho AI — giống như bạn có một chuyên gia thương hiệu RORU ngồi cạnh, nhắc nhở AI mọi quy tắc trước khi viết.</p>
+
+
+<!-- ── CHAPTER 2 ── -->
+<div class="chapter-header" id="ch2">
+  <div class="chapter-label">Chương 2</div>
+  <div class="chapter-title">Cơ sở lý thuyết — Tại sao hệ thống được xây dựng như vậy</div>
+</div>
+
+<p>Chương này giải thích những nguyên lý kỹ thuật đằng sau hệ thống, dựa trên framework <em>Agents hóa tổ chức</em> — phương pháp xây dựng hệ thống AI chuyên nghiệp cho doanh nghiệp.</p>
+
+<h2 id="4layer">Kiến trúc 4 lớp của tổ chức Agents hóa</h2>
+<p>Một hệ thống AI thật sự không phải là "đám chatbot xếp cạnh nhau". Nó là kiến trúc 4 lớp — thiếu lớp nào sẽ sụp lớp khác. RORU Content Writer được xây dựng theo đúng kiến trúc này:</p>
+
+<div class="layer-diagram">
+  <div class="layer-row l4">
+    <div class="layer-label">Lớp 4 — Meta</div>
+    <div class="layer-name">Agents quản lý Agents</div>
+    <div class="layer-desc">Website UI điều phối toàn bộ pipeline</div>
+  </div>
+  <div class="layer-row l3">
+    <div class="layer-label">Lớp 3 — Pipeline</div>
+    <div class="layer-name">Dây chuyền sản xuất</div>
+    <div class="layer-desc">Image Router → Story Extractor → Caption Writer → QA Guard</div>
+  </div>
+  <div class="layer-row l2">
+    <div class="layer-label">Lớp 2 — Capabilities</div>
+    <div class="layer-name">"Lego" năng lực tái sử dụng</div>
+    <div class="layer-desc">Viết ingredient story, technique education, haiku…</div>
+  </div>
+  <div class="layer-row l1">
+    <div class="layer-label">Lớp 1 — Knowledge Base</div>
+    <div class="layer-name">Tri thức cứng bất biến</div>
+    <div class="layer-desc">Brand DNA, Caption Structure, Voice &amp; Tone, Vocabulary</div>
+  </div>
+</div>
+
+<h2 id="agent-vs-chatbot">Agent khác chatbot như thế nào?</h2>
+<p>Một agent thật phải có đủ 4 yếu tố — thiếu một trong bốn, đó chỉ là "prompt template được đặt tên kêu":</p>
+
+<div class="grid-2x2">
+  <div class="grid-box">
+    <div class="grid-box-num">Yếu tố 1</div>
+    <div class="grid-box-title">Vai trò rõ ràng</div>
+    <p>"Tôi LÀM gì" và "Tôi KHÔNG làm gì" — ranh giới cứng, không chồng lấn.</p>
+  </div>
+  <div class="grid-box">
+    <div class="grid-box-num">Yếu tố 2</div>
+    <div class="grid-box-title">SOP chạy được</div>
+    <p>Bộ bước cụ thể, ai đọc cũng làm theo được — không phải "phân tích rồi viết".</p>
+  </div>
+  <div class="grid-box">
+    <div class="grid-box-num">Yếu tố 3</div>
+    <div class="grid-box-title">Input/Output đo được</div>
+    <p>Nhận từ ai, dạng gì; trả cho ai, dạng gì — không mơ hồ.</p>
+  </div>
+  <div class="grid-box">
+    <div class="grid-box-num">Yếu tố 4</div>
+    <div class="grid-box-title">Cộng tác có thứ tự</div>
+    <p>Biết ai là upstream và downstream trong pipeline.</p>
+  </div>
+</div>
+
+<div class="callout">
+  <div class="callout-label">Được xác nhận bởi nghiên cứu</div>
+  <p>Shanahan, McDonell &amp; Reynolds (<em>Nature</em>, 2023) chứng minh thực nghiệm: khi LLM được giao vai trò có ranh giới rõ ràng, output nhất quán và đáng tin cậy hơn đáng kể so với prompt không có context vai trò. Mỗi <code>SKILL.md</code> trong hệ thống RORU chính là cách cụ thể hóa nguyên lý này.</p>
+</div>
+
+<p>Trong hệ thống RORU, mỗi agent được định nghĩa chi tiết trong file <code>SKILL.md</code> riêng — có đầy đủ vai trò, SOP từng bước, input/output, và checklist "Definition of Done".</p>
+
+<h2 id="why-multi">Tại sao cần nhiều agent thay vì một? — 4 vấn đề cốt lõi</h2>
+
+<div class="callout">
+  <div class="callout-label">Nguyên lý cốt lõi</div>
+  <p>AI và nghiệp vụ không có chuyện "một đập ăn luôn". Chia thành 4 agents chuyên biệt giống như chia công việc cho 4 chuyên gia khác nhau — kết quả nhất quán và dễ cải thiện từng phần hơn nhiều.</p>
+</div>
+
+<p>Câu hỏi quen thuộc: tại sao không nhồi mọi yêu cầu vào một prompt thật dài? Trả lời ngắn: làm thế ra kết quả <em>trông có vẻ ổn nhưng sai một cách hệ thống</em>, và không sửa được vì không biết sai ở đâu. Có 4 vấn đề cụ thể:</p>
+
+<div class="problem-card">
+  <div class="problem-title">Vấn đề 1 — Chất lượng đồng thời</div>
+  <p>Ép một AI vừa nhận dạng dạng bài, vừa khai thác câu chuyện, vừa viết caption, vừa kiểm tra chất lượng trong một prompt — giống xách 8 túi bằng hai tay: vẫn đi được, nhưng đồ bị méo. Baddeley &amp; Hitch (1974) chứng minh bộ nhớ làm việc có dung lượng giới hạn cứng — vượt ngưỡng là performance sụp. Sweller (1988) xác nhận: cognitive load cao làm giảm chất lượng đồng đều ở mọi nhiệm vụ đang xử lý song song. Bốn agent chuyên biệt mỗi đứa dùng toàn bộ năng lực cho đúng một việc — không chia sẻ "bandwidth".</p>
+</div>
+
+<div class="problem-card">
+  <div class="problem-title">Vấn đề 2 — Traceability (truy vết lỗi)</div>
+  <p>Khi caption không đạt — hook yếu, sai giọng, thiếu chiều sâu — câu hỏi sống còn là: sai ở khâu nào? Nếu mọi thứ làm trong một đập, không có dấu vết để truy. Như cái bánh mì nướng cháy mà không biết là do bột, men, lò, hay tay người làm. Pipeline 4 bước đồng nghĩa với mỗi bước là một điểm có thể kiểm tra và cải thiện độc lập.</p>
+</div>
+
+<div class="problem-card">
+  <div class="problem-title">Vấn đề 3 — Tái sử dụng tri thức trung gian</div>
+  <p>Ở single-prompt, toàn bộ "nguyên liệu" AI suy nghĩ trong đầu bốc hơi sau khi ra deliverable cuối. Không còn lưu vết gì. Ở pipeline 4 bước, mỗi bước đẻ output trung gian có thể xem lại, chỉnh sửa, và tích lũy theo thời gian. Kho <code>Posts/</code> — được build từ nhiều lần Save — chính là tri thức trung gian đã vật chất hóa, dùng để cải thiện KB về sau.</p>
+</div>
+
+<div class="problem-card">
+  <div class="problem-title">Vấn đề 4 — Bộ não chuyên môn cho từng bước</div>
+  <p>Nhận dạng dạng bài cần framework phân loại thị giác. Khai thác câu chuyện cần kiến thức sâu về triết lý Nhật Bản, kỹ thuật ẩm thực, và narrative theory. Viết caption cần brand voice và vocabulary chuẩn RORU. Kiểm tra chất lượng cần checklist cứng. Bốn năng lực này rất khác nhau — ép một agent gánh cả bốn, không cái nào đạt đỉnh. Trong AI, kiến trúc Mixture of Experts (Shazeer et al., Google Brain, 2017) chứng minh điều tương tự: mô hình dùng các sub-network chuyên biệt theo từng loại task cho kết quả tốt hơn một mạng đơn lẻ lớn hơn.</p>
+</div>
+
+<h2 id="principles">5 Nguyên tắc tư duy bắt buộc của mỗi agent</h2>
+<p>Convention và kiến trúc chỉ là khung. Điều làm cho dây chuyền thật sự chạy được là 5 nguyên tắc tư duy được cứng hóa vào SOP của mỗi agent.</p>
+
+<div class="principle-card">
+  <div class="principle-num">Nguyên tắc 1</div>
+  <div class="principle-name">Spectrum of Choices — Không lấy đáp án đầu tiên</div>
+  <p>Bất kỳ bước sáng tạo nào, agent phải brainstorm ít nhất 3 phương án trước khi chọn. Wei et al. (Google, 2022) chứng minh trong Chain-of-Thought Prompting: buộc LLM suy nghĩ từng bước tường minh cải thiện accuracy lên đến 40–50% so với single-pass. Đáp án đầu tiên là đáp án gần nhất với pattern phổ biến — không phải đáp án phù hợp nhất với bức ảnh cụ thể đang xử lý.</p>
+</div>
+
+<div class="principle-card">
+  <div class="principle-num">Nguyên tắc 2</div>
+  <div class="principle-name">80/20 — Đẻ rộng rồi lọc xuống tinh hoa</div>
+  <p>Khi agent tạo nhiều phương án, phải có bước chấm điểm và rút xuống top 20% theo tiêu chí cụ thể. Đây là chỗ nhiều hệ thống AI thất bại — đưa ra 10 lựa chọn trông na ná nhau mà không có đánh giá, người dùng phải tự sàng lọc. Agent RORU tự sàng lọc giúp người dùng.</p>
+</div>
+
+<div class="principle-card">
+  <div class="principle-num">Nguyên tắc 3</div>
+  <div class="principle-name">Strategic Alignment — Một bước phục vụ nhiều mục tiêu</div>
+  <p>Output của mỗi bước phải tối đa hóa khả năng tái sử dụng — story được khai thác ở Story Extractor phải phục vụ được cho caption Instagram, Facebook, và tiếng Anh nếu cần, không phải chỉ một format.</p>
+</div>
+
+<div class="principle-card">
+  <div class="principle-num">Nguyên tắc 4</div>
+  <div class="principle-name">Polymath — Vay framework từ ngành khác</div>
+  <p>SOP của mỗi agent tham chiếu ít nhất một framework từ ngành ngoài marketing: narrative theory từ văn học và điện ảnh, cognitive linguistics, behavioral economics. Ericsson et al. (1993) chứng minh qua nghiên cứu Deliberate Practice: chuyên gia đỉnh cao không đơn giản là "có kinh nghiệm nhiều" — họ luyện tập tập trung theo framework rõ ràng. Không có framework = không có đỉnh cao.</p>
+</div>
+
+<div class="principle-card">
+  <div class="principle-num">Nguyên tắc 5</div>
+  <div class="principle-name">Unknown Unknowns — Pre-mortem trước khi giao</div>
+  <p>Checklist Definition of Done của mỗi agent có câu hỏi cưỡng chế: "Cái gì có thể sai mà tôi chưa nghĩ tới?" Klein (Harvard Business Review, 2007) chứng minh pre-mortem giúp nhóm phát hiện 30% nhiều điểm yếu hơn so với phương pháp đánh giá thông thường. Với QA Guard của RORU, đây là 7 câu hỏi kiểm tra cụ thể được tự động hóa ở cuối mỗi pipeline run.</p>
+</div>
+
+<h2 id="qa-guard">QA Guard — Hard Gate kiểm soát chất lượng</h2>
+<p>Trong framework Agents hóa, <strong>Hard Gate</strong> là điểm kiểm tra bắt buộc trước khi output được chuyển tiếp — đặt tại những chỗ "sai sẽ tốn nhất". QA Guard của RORU là Hard Gate cuối cùng của pipeline.</p>
+
+<div class="callout">
+  <div class="callout-label">Nguyên lý Hard Gate</div>
+  <p>Hard Gate không phải "cảm thấy ổn thì cho qua" mà phải có checklist cụ thể. QA Guard kiểm tra đủ 7 câu hỏi — từ "Hook có đủ mạnh không?" đến "Câu kết có hình ảnh cụ thể không?". Chỉ khi toàn bộ pass, caption mới được trả về cho người dùng.</p>
+</div>
+
+<p>Bằng chứng thực địa mạnh nhất: Gawande (2009) ghi lại rằng checklist phẫu thuật 19 bước của WHO giảm tỷ lệ tử vong 47% tại 8 bệnh viện trên 4 châu lục. James Reason (1990) phân tích hàng nghìn tai nạn công nghiệp và chứng minh "cảm thấy ổn" không phải kiểm tra — các điểm dừng có cấu trúc bắt được lỗi mà kiểm tra ngầm định bỏ qua. Taiichi Ohno (Toyota, 1988) đúc kết nguyên lý <em>Jidoka</em>: khi phát hiện lỗi, dừng dây chuyền ngay tại điểm đó và sửa — không bao giờ để lỗi chạy sang công đoạn tiếp theo. QA Guard của RORU là <em>Jidoka</em> tự động hóa cho pipeline AI.</p>
+
+<h2 id="kb">Knowledge Base — Tri thức cứng làm nền</h2>
+<p>Nguyên tắc quan trọng: <strong>agent là consumer của KB, không phải editor</strong>. Các agents đọc tri thức từ Repo B để thực hiện nhiệm vụ, nhưng không tự ý sửa nội dung KB. Repo B có cấu trúc KB chia theo tốc độ thay đổi:</p>
+
+<table>
+  <thead><tr><th>Loại file</th><th>Thay đổi khi nào</th><th>Ví dụ trong RORU</th></tr></thead>
+  <tbody>
+    <tr><td><strong>North-star (bất biến)</strong></td><td>Hiếm — chỉ khi brand strategy đổi</td><td>Brand DNA, giọng điệu, từ cấm</td></tr>
+    <tr><td><strong>Factual (ổn định)</strong></td><td>Khi có món mới, menu mới</td><td>Food &amp; Ingredient, Caption Structure</td></tr>
+    <tr><td><strong>Operations (vận hành)</strong></td><td>Khi cải tiến quy trình agent</td><td>SKILL.md của từng agent</td></tr>
+  </tbody>
+</table>
+
+<h2 id="save-loop">Nút Save và vòng lặp cải tiến hệ thống</h2>
+<p>Đây là một trong những tính năng quan trọng nhất, nhưng dễ bị bỏ qua nhất. Trong framework Agents hóa, một hệ thống trưởng thành cần có <strong>feedback loop</strong> — vòng lặp cho phép dữ liệu thực tế quay lại cải thiện hệ thống theo thời gian.</p>
+
+<p>Mỗi khi bạn bấm Save caption, ba việc xảy ra đồng thời: (1) Caption được đẩy lên GitHub vào thư mục <code>Posts/</code>; (2) Thư mục đó dần trở thành kho bài đăng thật của RORU; (3) Kho đó là nguyên liệu để người quản trị cải tiến KB và agents về sau.</p>
+
+<div class="callout">
+  <div class="callout-label">Cơ sở từ AI research</div>
+  <p>Christiano et al. (OpenAI, 2017) chứng minh trong nghiên cứu về RLHF (Reinforcement Learning from Human Feedback): khi AI học từ phản hồi của người dùng thực — "output nào tốt hơn" — chất lượng cải thiện đáng kể và bền vững theo thời gian. Đây là nền tảng kỹ thuật của ChatGPT và Claude. Kho <code>Posts/</code> trong RORU là phiên bản thủ công của vòng lặp này: mỗi caption bạn lưu là một "tín hiệu chất lượng" từ người dùng thực, được tích lũy để cải thiện hệ thống.</p>
+</div>
+
+<div class="callout callout-tip">
+  <div class="callout-label">Thói quen quan trọng</div>
+  <p>Bất kỳ caption nào bạn hài lòng và đã đăng lên mạng xã hội — hãy lưu nó. Không chỉ để lưu trữ, mà để hệ thống học từ những lựa chọn thực tế của đội ngũ. Càng nhiều người lưu, hệ thống càng thông minh hơn.</p>
+</div>
+
+<h2 id="research">Nghiên cứu và cơ sở học thuật chứng minh kiến trúc</h2>
+<p>Mỗi lựa chọn thiết kế trong RORU Content Writer đều có nền tảng trong nghiên cứu đã kiểm chứng. Dưới đây là các nguồn cốt lõi, phân theo chủ đề.</p>
+
+<div class="research-group">
+  <div class="research-group-label">Khoa học nhận thức &amp; não bộ</div>
+
+  <div class="research-item">
+    <div class="research-title">Working Memory Model</div>
+    <div class="research-source">Baddeley &amp; Hitch (1974). Psychological Review.</div>
+    <p>Bộ nhớ làm việc có dung lượng giới hạn cứng — "đa nhiệm" không tồn tại trong não, chỉ là chuyển đổi nhanh giữa các nhiệm vụ. Đây là cơ chế não học nền tảng ủng hộ kiến trúc pipeline chuyên biệt.</p>
+  </div>
+
+  <div class="research-item">
+    <div class="research-title">Cognitive Load Theory</div>
+    <div class="research-source">Sweller, J. (1988). Cognitive Science, 12(2), 257–285.</div>
+    <p>Khi hệ thống xử lý phải đảm nhận nhiều loại nhiệm vụ phức tạp đồng thời, hiệu suất của từng nhiệm vụ giảm xuống đáng kể. Đây là lý do RORU dùng 4 agents riêng biệt thay vì một prompt dài.</p>
+  </div>
+
+  <div class="research-item">
+    <div class="research-title">Functional Specialization in the Brain</div>
+    <div class="research-source">Neuroscience cơ bản. Broca (1861), Wernicke (1874), và nhiều nghiên cứu fMRI hiện đại.</div>
+    <p>Não không dùng "một vùng đa năng" — vùng Broca xử lý ngôn ngữ sản xuất, vùng Wernicke xử lý hiểu ngôn ngữ, vỏ não thị giác xử lý hình ảnh. Chuyên môn hóa là kiến trúc não hoạt động tốt nhất của tự nhiên.</p>
+  </div>
+
+  <div class="research-item">
+    <div class="research-title">Deliberate Practice &amp; Expert Performance</div>
+    <div class="research-source">Ericsson, K.A., Krampe, R.T., &amp; Tesch-Römer, C. (1993). Psychological Review, 100(3), 363–406.</div>
+    <p>Phân tích nhạc sĩ, vận động viên, bác sĩ: chuyên gia đỉnh cao đạt được qua luyện tập tập trung theo framework rõ ràng — không phải kinh nghiệm tổng quát. 5 nguyên tắc tư duy trong RORU là framework bắt buộc để mỗi agent "luyện tập có chủ đích" ở từng bước.</p>
+  </div>
+</div>
+
+<div class="research-group">
+  <div class="research-group-label">AI &amp; Học máy</div>
+
+  <div class="research-item">
+    <div class="research-title">Chain-of-Thought Prompting</div>
+    <div class="research-source">Wei, J. et al. (2022). NeurIPS. Google Brain.</div>
+    <p>Buộc LLM suy nghĩ từng bước tường minh cải thiện accuracy trên reasoning tasks lên đến 40–50% so với single-pass. Bằng chứng trực tiếp rằng cấu trúc quy trình — không phải tham số lớn hơn — là chìa khóa cải thiện chất lượng.</p>
+  </div>
+
+  <div class="research-item">
+    <div class="research-title">Role-Play with Large Language Models</div>
+    <div class="research-source">Shanahan, M., McDonell, K., &amp; Reynolds, L. (2023). Nature, 623, 493–498.</div>
+    <p>Thực nghiệm: khi LLM được giao vai trò có ranh giới rõ ràng, output nhất quán và đáng tin cậy hơn đáng kể. Lý do mỗi SKILL.md trong RORU định nghĩa chi tiết "tôi làm gì" và "tôi không làm gì".</p>
+  </div>
+
+  <div class="research-item">
+    <div class="research-title">Better Zero-Shot Reasoning with Role-Play Prompting</div>
+    <div class="research-source">Kong, A. et al. (2023). ACL Findings.</div>
+    <p>Kiểm tra trực tiếp role-based prompting trên nhiều benchmark AI: kết quả vượt trội so với generic prompt ở tất cả các loại task đòi hỏi chuyên môn. Đặc biệt rõ ở các task yêu cầu domain knowledge sâu.</p>
+  </div>
+
+  <div class="research-item">
+    <div class="research-title">Mixture of Experts (MoE)</div>
+    <div class="research-source">Shazeer, N. et al. (2017). ICLR. Google Brain.</div>
+    <p>Kiến trúc AI dùng các sub-network chuyên biệt theo từng loại input cho kết quả tốt hơn một mạng đơn lẻ lớn hơn — với ít tham số hơn. Nền tảng kỹ thuật của GPT-4 và nhiều mô hình đỉnh. Xác nhận "chuyên biệt hóa" là chiến lược đúng trong AI.</p>
+  </div>
+
+  <div class="research-item">
+    <div class="research-title">Reinforcement Learning from Human Feedback (RLHF)</div>
+    <div class="research-source">Christiano, P. et al. (2017). NeurIPS. OpenAI.</div>
+    <p>Dữ liệu phản hồi từ người dùng thực — "output nào tốt hơn" — cải thiện AI theo thời gian một cách bền vững. Nền tảng kỹ thuật của ChatGPT và Claude. Kho Posts/ trong RORU là phiên bản thủ công của vòng lặp này.</p>
+  </div>
+</div>
+
+<div class="research-group">
+  <div class="research-group-label">Khoa học tổ chức &amp; kiểm soát chất lượng</div>
+
+  <div class="research-item">
+    <div class="research-title">The Wealth of Nations — Division of Labor</div>
+    <div class="research-source">Smith, A. (1776). Book I, Chapter 1.</div>
+    <p>Khi nhà máy chia nhỏ quy trình thành các bước chuyên biệt thay vì mỗi người tự làm từ đầu đến cuối, năng suất tăng hàng nghìn lần. Nguyên lý 250 năm tuổi, vẫn là nền tảng của mọi hệ thống sản xuất chất lượng cao.</p>
+  </div>
+
+  <div class="research-item">
+    <div class="research-title">The Checklist Manifesto</div>
+    <div class="research-source">Gawande, A. (2009). Dựa trên WHO Safe Surgery Saves Lives study.</div>
+    <p>Checklist phẫu thuật 19 bước giảm tỷ lệ tử vong 47% tại 8 bệnh viện trên 4 châu lục. Bằng chứng thực địa mạnh nhất hiện có về Hard Gate: cấu trúc kiểm tra cứng bắt được lỗi mà "cảm thấy ổn" bỏ qua.</p>
+  </div>
+
+  <div class="research-item">
+    <div class="research-title">Human Error</div>
+    <div class="research-source">Reason, J. (1990). Cambridge University Press.</div>
+    <p>Phân tích hàng nghìn tai nạn công nghiệp: lỗi không phải do người vô trách nhiệm — mà do hệ thống không có điểm dừng kiểm tra có cấu trúc. QA Guard tự động hóa điểm dừng đó.</p>
+  </div>
+
+  <div class="research-item">
+    <div class="research-title">Toyota Production System — Jidoka</div>
+    <div class="research-source">Ohno, T. (1988). Productivity Press.</div>
+    <p>Nguyên lý Jidoka (自働化): khi phát hiện lỗi, dừng dây chuyền ngay tại điểm đó và sửa — không bao giờ để lỗi chạy sang công đoạn tiếp theo. QA Guard của RORU là Jidoka tự động hóa cho pipeline AI.</p>
+  </div>
+
+  <div class="research-item">
+    <div class="research-title">Performing a Project Premortem</div>
+    <div class="research-source">Klein, G. (2007). Harvard Business Review, 85(9), 18–19.</div>
+    <p>Trước khi ra quyết định, giả định kết quả đã thất bại và hỏi ngược: điều gì đã xảy ra? Giúp phát hiện 30% nhiều điểm yếu hơn so với đánh giá thông thường. Nguồn gốc của Nguyên tắc 5 (Unknown Unknowns) trong SOP của mỗi agent.</p>
+  </div>
+
+  <div class="research-item">
+    <div class="research-title">The Fifth Discipline — Learning Organization</div>
+    <div class="research-source">Senge, P.M. (1990). Doubleday.</div>
+    <p>Tổ chức học là tổ chức có vòng phản hồi kín từ kết quả thực tế quay về định hướng chiến lược. Kho Posts/ ngày càng phong phú chính là vòng lặp này — mỗi caption được lưu là một đóng góp vào khả năng học của hệ thống.</p>
+  </div>
+</div>
+
+<div class="callout">
+  <div class="callout-label">Tóm tắt</div>
+  <p>Từ khoa học nhận thức, AI research, đến quản lý chất lượng — mỗi lựa chọn thiết kế trong RORU Content Writer đều có nền tảng nghiên cứu xác nhận. Không phải trực giác, không phải thử nghiệm mò đường: kiến trúc được xây từ những nguyên lý đã hoạt động trong nhiều thập kỷ, ở nhiều lĩnh vực, rồi được điều chỉnh cho đặc thù của AI và ngành F&amp;B.</p>
+</div>
+
+
+<!-- ── CHAPTER 3 ── -->
+<div class="chapter-header" id="ch3">
+  <div class="chapter-label">Chương 3</div>
+  <div class="chapter-title">Logic pipeline — Từ ảnh đến caption</div>
+</div>
+
+<h2 id="agents">4 agents và vai trò từng agent</h2>
+
+<pre>AGENT 1          AGENT 2            AGENT 3           AGENT 4
+Image Router  →  Story Extractor  →  Caption Writer  →  QA Guard</pre>
+
+<h3>Agent 1 — Image Router: Nhận dạng loại ảnh</h3>
+<p>Nhìn vào ảnh và brief, xác định đây thuộc dạng bài nào trong 7 dạng mà RORU thường đăng. Kết quả nhận dạng định hướng toàn bộ các bước sau. Agent này chỉ làm một việc duy nhất — không viết, không khai thác câu chuyện.</p>
+
+<h3>Agent 2 — Story Extractor: Khai thác câu chuyện</h3>
+<p>Kết hợp thông tin từ ảnh và mô tả của bạn để xác định: register phù hợp (Thơ ca A / Kể chuyện B / Giải thích C), góc kể chuyện có chiều sâu nhất, và thông tin còn thiếu cần hỏi thêm. Đây là bước quan trọng nhất — quyết định "linh hồn" của caption.</p>
+
+<h3>Agent 3 — Caption Writer: Viết caption</h3>
+<p>Tạo ra bản thảo caption hoàn chỉnh theo cấu trúc 3 tầng: Hook → Body → Contact Block. Áp dụng từ vựng được phép và tránh tất cả từ bị cấm.</p>
+
+<h3>Agent 4 — QA Guard: Kiểm soát chất lượng</h3>
+<p>Chạy qua checklist 7 câu hỏi trước khi trả kết quả. Nếu phát hiện vi phạm, tự động sửa trước khi hiển thị cho bạn.</p>
+
+<h2 id="brand-dna">Brand DNA và 7 dạng bài</h2>
+
+<div class="callout">
+  <div class="callout-label">Brand DNA</div>
+  <p><strong>CONTEMPORARY · GENUINE · ROMANTIC</strong></p>
+</div>
+
+<p><strong>Contemporary (Đương đại):</strong> Theo đuổi lối sống đương đại nhưng luôn tôn trọng giá trị nguyên bản. Mọi sáng tạo đều có nền tảng.</p>
+<p><strong>Genuine (Chân thành):</strong> Ấm áp, tinh tế, sâu sắc. Lắng nghe và quan tâm thấu đáo kể cả khi người khác chưa nói ra.</p>
+<p><strong>Romantic (Lãng mạn):</strong> Luôn nhìn thấy điều tích cực, tìm vẻ đẹp trong mọi sự vật kể cả những điều bình dị nhất.</p>
+
+<table>
+  <thead><tr><th>Dạng bài</th><th>Nhận dạng qua ảnh</th></tr></thead>
+  <tbody>
+    <tr><td>1. Không gian &amp; Cảm xúc</td><td>Quầy bar, phòng ăn, ánh đèn — không có người hoặc đồ ăn làm chủ thể</td></tr>
+    <tr><td>2. Con người &amp; Khoảnh khắc</td><td>Chef, đội bếp, nụ cười tự nhiên — người là chủ thể chính</td></tr>
+    <tr><td>3. Nguyên liệu</td><td>Nguyên liệu tươi, cận cảnh, chưa chế biến</td></tr>
+    <tr><td>4. Kỹ thuật &amp; Giáo dục</td><td>Đôi tay đang làm việc, lọ lên men, cận cảnh kỹ thuật</td></tr>
+    <tr><td>5. Món ăn</td><td>Món đã hoàn chỉnh trên đĩa — food photography chính thức</td></tr>
+    <tr><td>6. Thực đơn mùa</td><td>Flat lay nhiều món, hoặc ảnh editorial có poster thực đơn</td></tr>
+    <tr><td>7. Sự kiện &amp; Collab</td><td>Poster event, ảnh đông người, có đối tác hoặc chef khách mời</td></tr>
+  </tbody>
+</table>
+
+<h2 id="structure">Cấu trúc caption 3 tầng và từ ngữ chuẩn</h2>
+
+<h3>Tầng 1 — Hook</h3>
+<p>Câu mở đầu kéo người đọc vào trong 3 giây. Không bao giờ bắt đầu bằng "RORU xin giới thiệu…". Dùng tên nguyên liệu Nhật, câu hỏi tu từ, câu thơ, hoặc tiêu đề tiếng Anh.</p>
+
+<h3>Tầng 2 — Body</h3>
+<p>Câu chuyện, kiến thức, cảm xúc. Không giải thích lại hình ảnh người đọc đã thấy. Thêm chiều sâu: xuất xứ nguyên liệu, kỹ thuật chế biến, triết lý.</p>
+
+<h3>Tầng 3 — Separator + Contact</h3>
+<p>Phân tách bằng <code>—</code> hoặc <code>---</code> rồi tới contact block cố định. Không bao giờ thiếu phần này.</p>
+
+<table>
+  <thead><tr><th>Từ ngữ tuyệt đối không dùng</th></tr></thead>
+  <tbody><tr><td>Đặt ngay! · Book ngay! · Ngon lắm! · Tuyệt vời lắm! · Đừng bỏ lỡ! · Siêu… · Số 1 · Cực kỳ · Đẳng cấp · Hảo hạng · Foodie · Check-in ngay</td></tr></tbody>
+</table>
+
+<table>
+  <thead><tr><th>Từ ngữ hệ thống ưu tiên</th></tr></thead>
+  <tbody><tr><td>thuận mùa · hương vị nguyên bản · tinh tế · tận tâm · ẩn mình · giao thoa · lãng mạn hoá · hiện thực · hành trình · cô đọng · thuần khiết · umami · hậu vị</td></tr></tbody>
+</table>
+
+
+<!-- ── CHAPTER 4 ── -->
+<div class="chapter-header" id="ch4">
+  <div class="chapter-label">Chương 4</div>
+  <div class="chapter-title">Hướng dẫn sử dụng website</div>
+</div>
+
+<h2 id="login">Đăng nhập và giao diện chính</h2>
+<p>Truy cập tại <strong>roru-marketing-ui.vercel.app</strong>. Đăng nhập bằng tài khoản dùng chung: tên đăng nhập <code>roru</code>, mật khẩu <code>roru</code>.</p>
+
+<div class="callout callout-warn">
+  <div class="callout-label">Lưu ý bảo mật</div>
+  <p>Tài khoản chia sẻ trong toàn đội ngũ RORU. Không chia sẻ ra bên ngoài.</p>
+</div>
+
+<pre>┌────────────────┬──────────────────────────────────────┐
+│ [+] New chat   │                          [Logout]    │
+│                │                                      │
+│  Lịch sử chat  │           Khu vực chat               │
+│  (sidebar)     │                                      │
+│                │  ┌──────────────────────────────┐    │
+│                │  │ [📎] Nhập tin nhắn...        │    │
+│                │  │     Sonnet 4.6 | Fastest  [↑]│    │
+│                │  └──────────────────────────────┘    │
+└────────────────┴──────────────────────────────────────┘</pre>
+
+<h2 id="steps">Tạo caption: quy trình từng bước</h2>
+<ol class="step-list">
+  <li><strong>Bắt đầu cuộc trò chuyện mới</strong><br>Bấm biểu tượng + ở góc trên phải sidebar.</li>
+  <li><strong>Upload ảnh (nếu có)</strong><br>Bấm đính kèm, hoặc kéo thả, hoặc copy ảnh rồi dán Ctrl+V / Cmd+V vào ô nhập liệu.</li>
+  <li><strong>Viết brief mô tả</strong><br>Gõ mô tả ngắn: tên nguyên liệu / món, xuất xứ, kỹ thuật, điểm muốn nhấn.</li>
+  <li><strong>Gửi yêu cầu</strong><br>Bấm nút gửi hoặc nhấn Enter. Đồng hồ đếm giây và số token sẽ hiện trong lúc chờ.</li>
+  <li><strong>Đọc và yêu cầu chỉnh sửa nếu cần</strong><br>Nhắn tiếp: "viết lại ngắn hơn", "thêm cảm xúc hơn", "thêm phiên bản Instagram"…</li>
+  <li><strong>Bấm Save caption khi hài lòng</strong><br>Nút bookmark nhỏ xuất hiện ngay dưới câu trả lời. Lưu lại để hệ thống học.</li>
+</ol>
+
+<div class="callout callout-tip">
+  <div class="callout-label">Brief hiệu quả</div>
+  <p>Nguyên tắc: tên + xuất xứ + điểm muốn nhấn. Ví dụ: "Uni Hokkaido, mùa hè, nhấn vào kỹ thuật ủ lạnh và vị ngọt thanh." Cứ gửi ảnh trước nếu chưa chắc — hệ thống sẽ tự hỏi thêm nếu cần.</p>
+</div>
+
+<h2 id="upload">Upload ảnh</h2>
+<ul>
+  <li><strong>Bấm nút đính kèm</strong> → chọn file (JPG, PNG, GIF, WEBP)</li>
+  <li><strong>Kéo thả</strong> — kéo file từ thư mục thả thẳng vào khu vực chat</li>
+  <li><strong>Copy-paste</strong> — copy ảnh từ bất cứ đâu rồi dán Ctrl+V / Cmd+V</li>
+</ul>
+<div class="callout">
+  <div class="callout-label">Tự động xử lý ảnh lớn</div>
+  <p>Website tự động nén ảnh lớn (tối đa 1120px, 85% chất lượng). Bạn không cần resize thủ công.</p>
+</div>
+
+<h2 id="model">Chọn model và Effort</h2>
+<table>
+  <thead><tr><th>Model</th><th>Khi nào dùng</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Sonnet 4.6 (mặc định)</strong></td><td>Hầu hết công việc hằng ngày — nhanh, đủ chất lượng</td></tr>
+    <tr><td><strong>Opus 4.6</strong></td><td>Caption phức tạp — thực đơn lớn, collab quốc tế, nhiều chi tiết kỹ thuật</td></tr>
+    <tr><td><strong>Opus 4.7</strong></td><td>Bài quan trọng nhất, cần suy nghĩ sâu nhất</td></tr>
+  </tbody>
+</table>
+<table>
+  <thead><tr><th>Effort</th><th>Ý nghĩa</th><th>Thời gian</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Fastest (mặc định)</strong></td><td>Viết thẳng — đủ tốt cho 90% trường hợp</td><td>Nhanh nhất</td></tr>
+    <tr><td><strong>Normal</strong></td><td>Suy nghĩ một chút trước khi viết</td><td>Trung bình</td></tr>
+    <tr><td><strong>High</strong></td><td>Suy nghĩ sâu — bài đăng quan trọng</td><td>Chậm hơn</td></tr>
+    <tr><td><strong>Max</strong></td><td>Suy nghĩ tối đa — chất lượng trên tốc độ</td><td>Chậm nhất</td></tr>
+  </tbody>
+</table>
+
+<h2 id="save-btn">Nút Save caption — Lưu và đóng góp cho hệ thống</h2>
+<p>Đây là bước quan trọng nhất sau khi tạo được caption ưng ý. Nút Save caption (biểu tượng bookmark) xuất hiện ngay bên dưới mỗi câu trả lời của hệ thống.</p>
+
+<ol class="step-list">
+  <li><strong>Bấm nút Save caption</strong><br>Nút bookmark nhỏ xuất hiện ngay bên dưới câu trả lời.</li>
+  <li><strong>Kiểm tra tên thư mục</strong><br>Tên tự động theo ngày: <code>2026-06-03_caption</code>. Có thể đổi thành <code>2026-06-03_uni-hokkaido</code></li>
+  <li><strong>Thêm ghi chú (tùy chọn)</strong><br>Context bổ sung: ảnh chụp ở đâu, ai gửi brief, bài dự kiến đăng khi nào…</li>
+  <li><strong>Bấm Save</strong><br>Hệ thống tạo file và đẩy lên GitHub tự động. Thông báo xác nhận hiện ở góc màn hình.</li>
+</ol>
+
+<table>
+  <thead><tr><th>File</th><th>Nội dung</th></tr></thead>
+  <tbody>
+    <tr><td><code>FINAL_POSTED.md</code></td><td>Caption cuối cùng bạn chọn — bản đã hoàn thiện để đăng</td></tr>
+    <tr><td><code>PIPELINE_OUTPUT.md</code></td><td>Toàn bộ quá trình hội thoại, brief gốc và các bản thảo</td></tr>
+    <tr><td><code>USER_INPUT.md</code></td><td>Ghi chú của bạn — chỉ tạo nếu bạn điền vào ô Note</td></tr>
+  </tbody>
+</table>
+
+<div class="callout callout-warn">
+  <div class="callout-label">Cảnh báo đóng tab</div>
+  <p>Nếu vừa nhận caption mà chưa lưu, trình duyệt sẽ hiện cảnh báo khi bạn cố đóng tab.</p>
+</div>
+
+<h2 id="history">Lịch sử hội thoại</h2>
+<ul>
+  <li>Tất cả cuộc trò chuyện được lưu tự động trong trình duyệt</li>
+  <li>Sidebar trái hiển thị danh sách theo thứ tự mới nhất trên cùng</li>
+  <li>Bấm tên để xem lại toàn bộ lịch sử và tiếp tục từ đó</li>
+  <li>Lịch sử lưu trong trình duyệt — đổi máy hoặc xóa cache sẽ mất</li>
+  <li>Caption quan trọng nên được lưu qua Save caption để đưa lên GitHub</li>
+</ul>
+
+
+<!-- ── CHAPTER 5 ── -->
+<div class="chapter-header" id="ch5">
+  <div class="chapter-label">Chương 5</div>
+  <div class="chapter-title">Mẹo thực tế và câu hỏi thường gặp</div>
+</div>
+
+<h2>Nên làm</h2>
+<ul>
+  <li>Cung cấp tên nguyên liệu cụ thể: "Uni Hokkaido" tốt hơn "nhím biển".</li>
+  <li>Nêu xuất xứ và mùa vụ: "cá cam Nhật, mùa đông" cho kết quả tốt hơn chỉ "cá cam".</li>
+  <li>Chỉ rõ kỹ thuật nếu biết: "dry-aged 5 ngày", "zuke trong nước tương mirin 2 giờ".</li>
+  <li>Yêu cầu viết lại nếu chưa ưng: "viết lại theo hướng thơ ca hơn", "ngắn hơn khoảng 50%".</li>
+  <li>Lưu đều đặn mọi caption đã đăng — để hệ thống học từ những lựa chọn thực tế của đội ngũ.</li>
+</ul>
+
+<h2>Nên tránh</h2>
+<ul>
+  <li>Brief quá chung chung: "Viết caption cho ảnh đồ ăn" không cho kết quả tốt.</li>
+  <li>Yêu cầu thêm từ ngữ bị cấm: Hệ thống sẽ từ chối hoặc tự điều chỉnh — đây là thiết kế có chủ đích.</li>
+  <li>Copy-paste caption mà không đọc lại: Hệ thống rất tốt nhưng không hoàn hảo 100%.</li>
+  <li>Dùng Max effort cho mọi bài: Không cần thiết và tốn thời gian. Fastest đủ cho 90% trường hợp.</li>
+  <li>Không lưu caption sau khi đăng: Lãng phí dữ liệu thực chiến quý giá của đội ngũ.</li>
+</ul>
+
+<h2>Brief mẫu theo dạng bài</h2>
+<table>
+  <thead><tr><th>Dạng bài</th><th>Brief mẫu hiệu quả</th></tr></thead>
+  <tbody>
+    <tr><td>Nguyên liệu</td><td class="brief-example">"Cá chim trắng, nhập từ Hokkaido, mùa hè, RORU dùng kỹ thuật dry-aged 4 ngày"</td></tr>
+    <tr><td>Con người</td><td class="brief-example">"Chef Khoa đang chuẩn bị nguyên liệu buổi sáng, khoảnh khắc tập trung trước giờ mở cửa"</td></tr>
+    <tr><td>Món ăn</td><td class="brief-example">"Nigiri cá trắng theo mùa, nhấn vào kỹ thuật zuke và vị umami thanh"</td></tr>
+    <tr><td>Thực đơn mùa</td><td class="brief-example">"THE ORIGINS Spring-Summer, nguyên liệu nổi bật: Uni Hokkaido và Botan Ebi"</td></tr>
+    <tr><td>Sự kiện</td><td class="brief-example">"Collab dinner với Chef Nguyễn Văn A từ Tokyo, ngày 15/7, 6pm, đặt chỗ qua hotline"</td></tr>
+  </tbody>
+</table>
+
+<h2>Câu hỏi thường gặp</h2>
+<p><strong>Hệ thống mất bao lâu để tạo caption?</strong><br>Thông thường 15–45 giây với Sonnet + Fastest. Nếu dùng Opus + Max, có thể lên đến 2–3 phút.</p>
+<p><strong>Có thể yêu cầu tạo phiên bản tiếng Anh không?</strong><br>Được. Nhắn "tạo thêm phiên bản tiếng Anh" hoặc "bilingual version cho event có đối tác quốc tế".</p>
+<p><strong>Tại sao caption đôi khi khác nhau dù cùng brief?</strong><br>AI có mức độ ngẫu nhiên nhất định để tạo sự đa dạng — đây là tính năng, không phải lỗi. Brief chi tiết hơn sẽ cho kết quả ổn định hơn.</p>
+<p><strong>Nếu gặp lỗi thì làm gì?</strong><br>Thử gửi lại tin nhắn một lần. Nếu lỗi tiếp diễn, liên hệ người quản trị kỹ thuật.</p>
+<p><strong>Caption đã lưu có thể xem lại ở đâu?</strong><br>Trên GitHub, trong thư mục <code>Posts/</code> của Repo B. Mỗi bài đăng là một thư mục riêng.</p>
+
+<div class="page-footer">
+  RORU — Modern Japanese Restaurant · 50 Nguyễn Quyền, Hai Bà Trưng, Hà Nội<br>
+  Tài liệu nội bộ · Phiên bản 1.1 · Tháng 6, 2026
+</div>
+
+</main>
+</body>
+</html>
