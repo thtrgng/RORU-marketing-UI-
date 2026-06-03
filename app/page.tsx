@@ -35,12 +35,15 @@ export default function HomePage() {
   const [streamingContent, setStreamingContent] = useState("");
   const [saveState, setSaveState] = useState<SaveState | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const [selectedModel, setSelectedModel] = useState<ModelId>(DEFAULT_MODEL);
 
   useEffect(() => {
     const stored = loadChats();
     setChats(stored);
     if (stored.length > 0) {
-      setActiveChatId(stored.sort((a, b) => b.updatedAt - a.updatedAt)[0].id);
+      const latest = stored.sort((a, b) => b.updatedAt - a.updatedAt)[0];
+      setActiveChatId(latest.id);
+      setSelectedModel(latest.model);
     }
   }, []);
 
@@ -52,22 +55,25 @@ export default function HomePage() {
   }
 
   function handleNewChat() {
-    const chat = createChat(activeChat?.model ?? DEFAULT_MODEL);
+    const chat = createChat(selectedModel);
     const updated = [chat, ...chats];
     updateChats(updated);
     setActiveChatId(chat.id);
   }
 
-  function handleSelectChat(id: string) {
-    setActiveChatId(id);
-  }
-
   function handleModelChange(model: ModelId) {
+    setSelectedModel(model);
     if (!activeChatId) return;
     const updated = chats.map((c) =>
       c.id === activeChatId ? { ...c, model } : c
     );
     updateChats(updated);
+  }
+
+  function handleSelectChat(id: string) {
+    setActiveChatId(id);
+    const chat = chats.find((c) => c.id === id);
+    if (chat) setSelectedModel(chat.model);
   }
 
   function handleSaveCaption(content: string) {
@@ -211,12 +217,10 @@ export default function HomePage() {
             RORU Marketing
           </h1>
           <div className="flex items-center gap-3">
-            {activeChat && (
-              <ModelSelector
-                value={activeChat.model}
-                onChange={handleModelChange}
-              />
-            )}
+            <ModelSelector
+              value={selectedModel}
+              onChange={handleModelChange}
+            />
             <button
               onClick={handleLogout}
               className="flex items-center gap-1.5 text-xs text-roru-muted hover:text-roru-text transition-colors"
