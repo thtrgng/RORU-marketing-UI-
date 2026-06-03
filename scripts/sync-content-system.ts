@@ -58,6 +58,11 @@ function main() {
   try {
     execSync(`git clone --depth 1 "${cloneUrl}" "${CLONE_DIR}"`, {
       stdio: "inherit",
+      env: {
+        ...process.env,
+        GIT_TERMINAL_PROMPT: "0",
+        GIT_ASKPASS: "echo",
+      },
     });
   } catch (err) {
     console.error("[sync] Failed to clone Repo B:", err);
