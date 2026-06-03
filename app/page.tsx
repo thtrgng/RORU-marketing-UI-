@@ -6,11 +6,26 @@ import Sidebar from "@/components/Sidebar";
 import ChatArea from "@/components/ChatArea";
 import MessageInput from "@/components/MessageInput";
 import ModelSelector from "@/components/ModelSelector";
+import SaveDialog from "@/components/SaveDialog";
+import Toast from "@/components/Toast";
 import { loadChats, saveChats, createChat } from "@/lib/storage";
 import type { Chat, Message, ImageAttachment, ModelId } from "@/types";
 import { LogOutIcon } from "lucide-react";
 
 const DEFAULT_MODEL: ModelId = "claude-sonnet-4-6";
+
+interface SaveState {
+  content: string;
+  allMessages: Message[];
+}
+
+function buildFolderName(): string {
+  const now = new Date();
+  const yyyy = now.getFullYear();
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+  const dd = String(now.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}_caption`;
+}
 
 export default function HomePage() {
   const router = useRouter();
@@ -18,6 +33,8 @@ export default function HomePage() {
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [isStreaming, setIsStreaming] = useState(false);
   const [streamingContent, setStreamingContent] = useState("");
+  const [saveState, setSaveState] = useState<SaveState | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
 
   useEffect(() => {
     const stored = loadChats();
@@ -53,6 +70,18 @@ export default function HomePage() {
     updateChats(updated);
   }
 
+  function handleSaveCaption(content: string) {
+    setSaveState({
+      content,
+      allMessages: activeChat?.messages ?? [],
+    });
+  }
+
+  function handleSaved(folderName: string) {
+    setSaveState(null);
+    setToast(`Saved to Posts/${folderName}/`);
+  }
+
   const handleSend = useCallback(
     async (content: string, images: ImageAttachment[]) => {
       let chat = activeChat;
@@ -84,9 +113,9 @@ export default function HomePage() {
         updatedAt: Date.now(),
       };
 
-      const newChats = chats
-        .map((c) => (c.id === updatedChat.id ? updatedChat : c))
-        .concat(chats.some((c) => c.id === updatedChat.id) ? [] : [updatedChat]);
+      const newChats = chats.some((c) => c.id === updatedChat.id)
+        ? chats.map((c) => (c.id === updatedChat.id ? updatedChat : c))
+        : [updatedChat, ...chats];
       updateChats(newChats);
 
       setIsStreaming(true);
@@ -164,6 +193,9 @@ export default function HomePage() {
     router.push("/login");
   }
 
+  const pipelineOutput =
+    saveState?.allMessages.map((m) => `**${m.role}**: ${m.content}`).join("\n\n") ?? "";
+
   return (
     <div className="flex h-screen bg-roru-bg overflow-hidden">
       <Sidebar
@@ -199,10 +231,23 @@ export default function HomePage() {
           messages={activeChat?.messages ?? []}
           isStreaming={isStreaming}
           streamingContent={streamingContent}
+          onSaveCaption={handleSaveCaption}
         />
 
         <MessageInput onSend={handleSend} disabled={isStreaming} />
       </div>
+
+      {saveState && (
+        <SaveDialog
+          defaultFolderName={buildFolderName()}
+          pipelineOutput={pipelineOutput}
+          finalPosted={saveState.content}
+          onClose={() => setSaveState(null)}
+          onSaved={handleSaved}
+        />
+      )}
+
+      {toast && <Toast message={toast} onDismiss={() => setToast(null)} />}
     </div>
   );
 }
