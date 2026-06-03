@@ -43,7 +43,7 @@ function buildSystemPrompt(repoDir: string): string {
 }
 
 function main() {
-  const token = process.env.GITHUB_TOKEN;
+  const token = process.env.GITHUB_TOKEN?.trim();
 
   // Clone or pull Repo B
   if (existsSync(CLONE_DIR)) {
