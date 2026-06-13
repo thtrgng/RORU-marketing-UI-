@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { SquarePenIcon } from "lucide-react";
 import type { Chat } from "@/types";
 import { clsx } from "clsx";
@@ -21,6 +22,16 @@ export default function Sidebar({
   isOpen,
   onClose,
 }: Props) {
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    if (isOpen) {
+      document.addEventListener("keydown", onKey);
+      return () => document.removeEventListener("keydown", onKey);
+    }
+  }, [isOpen, onClose]);
+
   return (
     <>
       {/* Tap-outside backdrop — mobile only */}
@@ -32,6 +43,7 @@ export default function Sidebar({
       )}
 
       <aside
+        aria-hidden={!isOpen}
         className={clsx(
           "w-[260px] flex flex-col bg-roru-sidebar h-full",
           // Mobile: fixed overlay, slides in/out
