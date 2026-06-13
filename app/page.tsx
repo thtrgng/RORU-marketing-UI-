@@ -9,7 +9,7 @@ import SaveDialog from "@/components/SaveDialog";
 import Toast from "@/components/Toast";
 import { loadChats, saveChats, createChat } from "@/lib/storage";
 import type { Chat, Message, ImageAttachment, ModelId, ThinkingLevel } from "@/types";
-import { LogOutIcon, BookOpenIcon } from "lucide-react";
+import { LogOutIcon, BookOpenIcon, MenuIcon } from "lucide-react";
 import GuideModal from "@/components/GuideModal";
 
 const DEFAULT_MODEL: ModelId = "claude-sonnet-4-6";
@@ -39,6 +39,7 @@ export default function HomePage() {
   const [thinkingLevel, setThinkingLevel] = useState<ThinkingLevel>("low");
   const [unsavedCaption, setUnsavedCaption] = useState(false);
   const [guideOpen, setGuideOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Warn before tab/browser close if there's an unsaved caption or active stream
   useEffect(() => {
@@ -225,27 +226,41 @@ export default function HomePage() {
       <Sidebar
         chats={chats}
         activeChatId={activeChatId}
-        onNewChat={handleNewChat}
-        onSelectChat={handleSelectChat}
+        onNewChat={() => { handleNewChat(); setSidebarOpen(false); }}
+        onSelectChat={(id) => { handleSelectChat(id); setSidebarOpen(false); }}
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
       />
 
       <div className="flex flex-col flex-1 min-w-0">
-        <header className="flex items-center justify-end gap-1 px-4 py-2.5 border-b border-roru-border shrink-0">
+        <header className="flex items-center px-4 py-2.5 border-b border-roru-border shrink-0">
+          {/* Hamburger — mobile only */}
           <button
-            onClick={() => setGuideOpen(true)}
-            title="Hướng dẫn sử dụng"
-            className="flex items-center gap-1.5 text-xs text-roru-muted hover:text-roru-text transition-colors px-2 py-1 rounded-md hover:bg-roru-surface"
+            onClick={() => setSidebarOpen(true)}
+            className="md:hidden p-1.5 rounded-md text-roru-muted hover:text-roru-text hover:bg-roru-surface transition-colors"
+            title="Open menu"
           >
-            <BookOpenIcon size={13} />
-            Hướng dẫn
+            <MenuIcon size={16} />
           </button>
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-1.5 text-xs text-roru-muted hover:text-roru-text transition-colors px-2 py-1 rounded-md hover:bg-roru-surface"
-          >
-            <LogOutIcon size={13} />
-            Logout
-          </button>
+
+          {/* Right-side actions — always visible */}
+          <div className="flex items-center gap-1 ml-auto">
+            <button
+              onClick={() => setGuideOpen(true)}
+              title="Hướng dẫn sử dụng"
+              className="flex items-center gap-1.5 text-xs text-roru-muted hover:text-roru-text transition-colors px-2 py-1 rounded-md hover:bg-roru-surface"
+            >
+              <BookOpenIcon size={13} />
+              Hướng dẫn
+            </button>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-1.5 text-xs text-roru-muted hover:text-roru-text transition-colors px-2 py-1 rounded-md hover:bg-roru-surface"
+            >
+              <LogOutIcon size={13} />
+              Logout
+            </button>
+          </div>
         </header>
 
         <ChatArea
