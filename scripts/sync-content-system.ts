@@ -25,20 +25,46 @@ function collectFiles(dir: string, files: string[] = []): string[] {
   return files;
 }
 
+// ~20k tokens worth of characters; leaves headroom for conversation within the 30k/min limit
+const SYSTEM_PROMPT_CHAR_LIMIT = 80_000;
+
 function buildSystemPrompt(repoDir: string): string {
-  const files = collectFiles(repoDir);
-  if (files.length === 0) {
+  const allFiles = collectFiles(repoDir);
+  if (allFiles.length === 0) {
     console.warn("[sync] No knowledge files found in Repo B");
     return "You are the RORU caption writing assistant.";
   }
 
-  const sections = files.map((filePath) => {
+  // SKILL.md files are the most critical — include them first
+  const skillFiles = allFiles.filter((f) =>
+    f.toLowerCase().includes("skill")
+  );
+  const otherFiles = allFiles.filter((f) =>
+    !f.toLowerCase().includes("skill")
+  );
+  const ordered = [...skillFiles, ...otherFiles];
+
+  let total = 0;
+  const sections: string[] = [];
+  let included = 0;
+  let skipped = 0;
+
+  for (const filePath of ordered) {
     const relativePath = filePath.replace(repoDir + "/", "");
     const content = readFileSync(filePath, "utf-8").trim();
-    return `### ${relativePath}\n\n${content}`;
-  });
+    const section = `### ${relativePath}\n\n${content}`;
+    if (total + section.length > SYSTEM_PROMPT_CHAR_LIMIT) {
+      skipped++;
+      continue;
+    }
+    sections.push(section);
+    total += section.length;
+    included++;
+  }
 
-  console.log(`[sync] Embedded ${files.length} files from Repo B`);
+  console.log(
+    `[sync] Embedded ${included} files from Repo B (${skipped} skipped, ${total} chars)`
+  );
   return sections.join("\n\n---\n\n");
 }
 

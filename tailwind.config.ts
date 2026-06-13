@@ -10,17 +10,35 @@ const config: Config = {
     extend: {
       colors: {
         roru: {
-          bg: "#0a0e1a",
-          surface: "#111827",
-          border: "#1f2937",
-          accent: "#8b6343",
-          "accent-light": "#a97c52",
-          text: "#e5e7eb",
-          muted: "#6b7280",
+          bg: "#1c1917",
+          sidebar: "#171512",
+          surface: "#252220",
+          "user-bubble": "#2a2724",
+          border: "#302e2b",
+          "border-subtle": "#252220",
+          accent: "#cc785c",
+          "accent-hover": "#d98b6f",
+          text: "#eeece8",
+          muted: "#97948f",
+          "input-bg": "#211f1d",
         },
       },
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
+        sans: [
+          "ui-sans-serif",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "Helvetica",
+          "Arial",
+          "sans-serif",
+        ],
+      },
+      fontSize: {
+        chat: ["15px", { lineHeight: "1.65" }],
+      },
+      maxWidth: {
+        chat: "680px",
       },
     },
   },

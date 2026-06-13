@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import type { Message } from "@/types";
-import { clsx } from "clsx";
 import { BookmarkIcon } from "lucide-react";
 
 interface Props {
@@ -11,6 +10,87 @@ interface Props {
   isStreaming: boolean;
   streamingContent: string;
   onSaveCaption: (content: string) => void;
+}
+
+// Anthropic-style 6-arm asterisk logo
+function ClaudeIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="currentColor">
+      {[0, 60, 120, 180, 240, 300].map((angle) => (
+        <rect
+          key={angle}
+          x="11"
+          y="1.5"
+          width="2"
+          height="9"
+          rx="1"
+          transform={`rotate(${angle} 12 12)`}
+        />
+      ))}
+    </svg>
+  );
+}
+
+function StreamingIndicator({ content }: { content: string }) {
+  const [elapsed, setElapsed] = useState(0);
+  const startRef = useRef(Date.now());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setElapsed(Math.floor((Date.now() - startRef.current) / 1000));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const mins = Math.floor(elapsed / 60);
+  const secs = elapsed % 60;
+  const timeStr = `${mins}:${String(secs).padStart(2, "0")}`;
+  const tokens = content ? Math.ceil(content.length / 3.5) : 0;
+
+  return (
+    <div className="flex flex-col gap-3 w-full">
+      <div className="flex items-center gap-2">
+        <ClaudeIcon className="w-5 h-5 text-roru-accent animate-pulse" />
+        <span className="text-sm text-roru-muted tabular-nums">{timeStr}</span>
+        {tokens > 0 && (
+          <>
+            <span className="text-roru-border select-none">·</span>
+            <span className="text-sm text-roru-muted">{tokens} tokens</span>
+          </>
+        )}
+      </div>
+      {content && (
+        <div className="prose prose-sm max-w-none text-roru-text prose-headings:text-roru-text prose-strong:text-roru-text prose-code:text-roru-text prose-pre:bg-roru-surface prose-pre:border prose-pre:border-roru-border prose-blockquote:border-roru-border prose-blockquote:text-roru-muted prose-a:text-roru-accent leading-relaxed">
+          <ReactMarkdown>{content}</ReactMarkdown>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function AssistantMessage({
+  content,
+  onSave,
+}: {
+  content: string;
+  onSave: () => void;
+}) {
+  return (
+    <div className="w-full">
+      <div className="prose prose-sm max-w-none text-roru-text prose-headings:text-roru-text prose-strong:text-roru-text prose-code:text-roru-text prose-pre:bg-roru-surface prose-pre:border prose-pre:border-roru-border prose-blockquote:border-roru-border prose-blockquote:text-roru-muted prose-a:text-roru-accent leading-relaxed">
+        <ReactMarkdown>{content}</ReactMarkdown>
+      </div>
+      {content && (
+        <button
+          onClick={onSave}
+          className="mt-2 flex items-center gap-1.5 px-2 py-1 text-xs text-roru-muted hover:text-roru-text transition-colors rounded-md hover:bg-roru-surface"
+        >
+          <BookmarkIcon size={12} />
+          Save caption
+        </button>
+      )}
+    </div>
+  );
 }
 
 export default function ChatArea({
@@ -28,32 +108,17 @@ export default function ChatArea({
   if (messages.length === 0 && !isStreaming) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <p className="text-roru-muted text-sm">
-          Start a conversation to generate captions.
-        </p>
+        <p className="text-roru-muted text-sm">Start a conversation to generate captions.</p>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 space-y-4">
-      {messages.map((msg) => (
-        <div
-          key={msg.id}
-          className={clsx(
-            "flex",
-            msg.role === "user" ? "justify-end" : "justify-start"
-          )}
-        >
-          <div className={clsx("flex flex-col gap-1", msg.role === "assistant" && "max-w-[80%]")}>
-            <div
-              className={clsx(
-                "rounded-2xl px-4 py-3 text-sm",
-                msg.role === "user"
-                  ? "max-w-[80%] bg-roru-accent text-white rounded-br-sm"
-                  : "bg-roru-surface border border-roru-border text-roru-text rounded-bl-sm"
-              )}
-            >
+    <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6">
+      {messages.map((msg) =>
+        msg.role === "user" ? (
+          <div key={msg.id} className="flex justify-end w-full">
+            <div className="max-w-[85%] rounded-2xl rounded-br-sm bg-roru-user-bubble px-4 py-3 text-chat text-roru-text">
               {msg.images && msg.images.length > 0 && (
                 <div className="mb-2 flex flex-wrap gap-2">
                   {msg.images.map((img, i) => (
@@ -62,54 +127,26 @@ export default function ChatArea({
                       key={i}
                       src={img.dataUrl}
                       alt={img.name}
-                      className="h-24 w-auto rounded-lg object-cover"
+                      className="h-24 w-auto rounded-xl object-cover"
                     />
                   ))}
                 </div>
               )}
-              {msg.role === "assistant" ? (
-                <div className="prose prose-sm prose-invert max-w-none">
-                  <ReactMarkdown>{msg.content}</ReactMarkdown>
-                </div>
-              ) : (
-                <p className="whitespace-pre-wrap">{msg.content}</p>
+              {msg.content && (
+                <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
               )}
             </div>
-
-            {msg.role === "assistant" && msg.content && (
-              <button
-                onClick={() => onSaveCaption(msg.content)}
-                className="self-start flex items-center gap-1.5 px-2 py-1 text-xs text-roru-muted hover:text-roru-accent transition-colors rounded"
-              >
-                <BookmarkIcon size={12} />
-                Save caption
-              </button>
-            )}
           </div>
-        </div>
-      ))}
-
-      {isStreaming && streamingContent && (
-        <div className="flex justify-start">
-          <div className="max-w-[80%] rounded-2xl rounded-bl-sm px-4 py-3 text-sm bg-roru-surface border border-roru-border text-roru-text">
-            <div className="prose prose-sm prose-invert max-w-none">
-              <ReactMarkdown>{streamingContent}</ReactMarkdown>
-            </div>
-          </div>
-        </div>
+        ) : (
+          <AssistantMessage
+            key={msg.id}
+            content={msg.content}
+            onSave={() => onSaveCaption(msg.content)}
+          />
+        )
       )}
 
-      {isStreaming && !streamingContent && (
-        <div className="flex justify-start">
-          <div className="rounded-2xl rounded-bl-sm px-4 py-3 bg-roru-surface border border-roru-border">
-            <div className="flex gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-roru-muted animate-bounce [animation-delay:0ms]" />
-              <span className="w-1.5 h-1.5 rounded-full bg-roru-muted animate-bounce [animation-delay:150ms]" />
-              <span className="w-1.5 h-1.5 rounded-full bg-roru-muted animate-bounce [animation-delay:300ms]" />
-            </div>
-          </div>
-        </div>
-      )}
+      {isStreaming && <StreamingIndicator content={streamingContent} />}
 
       <div ref={bottomRef} />
     </div>

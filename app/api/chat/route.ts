@@ -1,10 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { getAnthropicClient } from "@/lib/anthropic";
-import type { Message, ModelId } from "@/types";
+import type { Message, ModelId, ThinkingLevel } from "@/types";
 
 const STUB_SYSTEM_PROMPT =
   "You are the RORU caption writing assistant. Help the user craft engaging social media captions for RORU's restaurant content.";
+
+const THINKING_CONFIG: Record<ThinkingLevel, { budgetTokens: number | null; maxTokens: number }> = {
+  low:    { budgetTokens: null,  maxTokens: 4096  },
+  medium: { budgetTokens: 3000,  maxTokens: 8000  },
+  high:   { budgetTokens: 8000,  maxTokens: 16000 },
+  max:    { budgetTokens: 16000, maxTokens: 24000 },
+};
 
 function buildAnthropicMessages(messages: Message[]) {
   return messages.map((msg) => {
@@ -40,8 +47,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const body = await req.json();
-  const { messages, model } = body as { messages: Message[]; model: ModelId };
+  let body: { messages: Message[]; model: ModelId; thinkingLevel?: ThinkingLevel };
+  try {
+    body = await req.json();
+  } catch {
+    return new Response("Request body too large or malformed.", { status: 413 });
+  }
+
+  const { messages, model, thinkingLevel = "low" } = body;
+  const { budgetTokens, maxTokens } = THINKING_CONFIG[thinkingLevel];
 
   let systemPrompt: string;
   try {
@@ -53,20 +67,35 @@ export async function POST(req: NextRequest) {
   }
 
   const anthropic = getAnthropicClient();
-  const anthropicMessages = buildAnthropicMessages(messages);
+  const recentMessages = messages.slice(-10);
+  const anthropicMessages = buildAnthropicMessages(recentMessages);
 
-  const stream = await anthropic.messages.stream({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const streamParams: any = {
     model,
-    max_tokens: 4096,
+    max_tokens: maxTokens,
     system: systemPrompt,
     messages: anthropicMessages,
-  });
+  };
+
+  if (budgetTokens !== null) {
+    streamParams.thinking = { type: "enabled", budget_tokens: budgetTokens };
+  }
+
+  let stream: Awaited<ReturnType<typeof anthropic.messages.stream>>;
+  try {
+    stream = await anthropic.messages.stream(streamParams);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : "Anthropic API error";
+    return new Response(msg, { status: 502 });
+  }
 
   const encoder = new TextEncoder();
   const readableStream = new ReadableStream({
     async start(controller) {
       try {
         for await (const chunk of stream) {
+          // Only forward text deltas — thinking_delta blocks are silently skipped
           if (
             chunk.type === "content_block_delta" &&
             chunk.delta.type === "text_delta"
@@ -75,7 +104,8 @@ export async function POST(req: NextRequest) {
           }
         }
       } catch (err) {
-        controller.error(err);
+        const msg = err instanceof Error ? err.message : "Stream error";
+        controller.enqueue(encoder.encode(`\n\n[Error: ${msg}]`));
       } finally {
         controller.close();
       }

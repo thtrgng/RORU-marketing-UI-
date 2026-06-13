@@ -12,19 +12,16 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
     setLoading(true);
-
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
-
       if (!res.ok) {
         setError("Incorrect username or password.");
         return;
       }
-
       window.location.href = "/";
     } catch {
       setError("Something went wrong. Please try again.");
@@ -35,62 +32,47 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-roru-bg">
-      <div className="w-full max-w-sm">
+      <div className="w-full max-w-[340px] px-4">
         <div className="mb-8 text-center">
-          <h1 className="text-2xl font-semibold text-roru-text tracking-tight">
+          <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-roru-accent mb-4">
+            <span className="text-white text-base font-semibold leading-none">R</span>
+          </div>
+          <h1 className="text-xl font-semibold text-roru-text">
             RORU Marketing
           </h1>
           <p className="mt-1 text-sm text-roru-muted">Sign in to continue</p>
         </div>
 
-        <form
-          onSubmit={handleSubmit}
-          className="bg-roru-surface border border-roru-border rounded-xl p-6 space-y-4"
-        >
-          <div>
-            <label
-              htmlFor="username"
-              className="block text-sm font-medium text-roru-text mb-1"
-            >
-              Username
-            </label>
-            <input
-              id="username"
-              type="text"
-              autoComplete="username"
-              required
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-full bg-roru-bg border border-roru-border rounded-lg px-3 py-2 text-sm text-roru-text placeholder-roru-muted focus:outline-none focus:border-roru-accent transition-colors"
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-roru-text mb-1"
-            >
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              autoComplete="current-password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-roru-bg border border-roru-border rounded-lg px-3 py-2 text-sm text-roru-text placeholder-roru-muted focus:outline-none focus:border-roru-accent transition-colors"
-            />
-          </div>
+        <form onSubmit={handleSubmit} className="space-y-3">
+          <input
+            id="username"
+            type="text"
+            autoComplete="username"
+            required
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="w-full bg-roru-input-bg border border-roru-border rounded-xl px-4 py-3 text-sm text-roru-text placeholder-roru-muted focus:outline-none focus:border-roru-muted transition-colors"
+          />
+          <input
+            id="password"
+            type="password"
+            autoComplete="current-password"
+            required
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full bg-roru-input-bg border border-roru-border rounded-xl px-4 py-3 text-sm text-roru-text placeholder-roru-muted focus:outline-none focus:border-roru-muted transition-colors"
+          />
 
           {error && (
-            <p className="text-sm text-red-400 text-center">{error}</p>
+            <p className="text-xs text-red-400 text-center pt-1">{error}</p>
           )}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-roru-accent hover:bg-roru-accent-light disabled:opacity-50 text-white font-medium rounded-lg py-2 text-sm transition-colors"
+            className="w-full bg-roru-accent hover:bg-roru-accent-hover disabled:opacity-50 text-white font-medium rounded-xl py-3 text-sm transition-colors mt-1"
           >
             {loading ? "Signing in..." : "Sign in"}
           </button>
