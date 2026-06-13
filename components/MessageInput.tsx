@@ -180,7 +180,7 @@ export default function MessageInput({
         />
 
         {/* Bottom toolbar */}
-        <div className="flex items-center justify-between px-3 pb-2.5">
+        <div className="flex items-center justify-between px-2 pb-2.5 md:px-3">
           {/* Left: attach */}
           <button type="button" onClick={() => fileRef.current?.click()}
             className="p-1.5 rounded-lg text-roru-muted hover:text-roru-text hover:bg-roru-surface transition-colors" title="Upload image">
