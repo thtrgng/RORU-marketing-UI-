@@ -17,7 +17,10 @@ export interface Message {
 export type ModelId =
   | "claude-sonnet-4-6"
   | "claude-opus-4-6"
-  | "claude-opus-4-7";
+  | "claude-opus-4-7"
+  | "claude-opus-4-8";
+
+export type ThinkingLevel = "low" | "medium" | "high" | "max";
 
 export interface Chat {
   id: string;
